@@ -81,10 +81,10 @@ class QR:
         qr_id: models.QRCode = crud.get_qr_code(self._db, decrypt)
 
         if not(qr_id):
-            raise QRCodeError(Error.READ_QR_CODE)
+            raise QRCodeError(Error.QR_CODE_READ)
 
         if qr_id.email.lower() != email.lower():
-            raise QRCodeError(Error.READ_QR_CODE)
+            raise QRCodeError(Error.QR_CODE_READ)
         
         return qr_id
     
