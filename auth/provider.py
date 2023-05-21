@@ -1,9 +1,10 @@
-from enum import Enum
+from enum import Enum, unique
 
 from exception.provider import ProviderValidate, Validate
 from .google import GoogleProvider
 
 
+@unique
 class Provider(Enum):
     GOOGLE = 'google'
 
