@@ -9,14 +9,26 @@ Para ejecutar el proyecto **Código QR** se puede realizar de dos maneras:
 
 Para ambos casos, se debe de crear un archivo en la raíz del proyecto con el nombre: `.env`. Dentro del archivo ingresar los valores de las variables:
 ```bash
+# Database
 DATABASE_HOST=""
 DATABASE_USERNAME=""
 DATABASE_PASSWORD=""
 DATABASE_PORT=
 DATABASE_NAME=""
 
-
+# Fernet
 FERNET_PASS=""
+
+# Google
+CLIENT_ID_GOOGLE=""
+CLIENT_SECRET_GOOGLE=""
+
+# Debug
+DEBUG=
+
+# JWT
+JWT_SECRET_KEY=""
+JWT_EXPIRE_MINUTES=
 ```
 
 ## Localmente
