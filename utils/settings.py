@@ -17,7 +17,10 @@ class Settings(BaseSettings):
     fernet_pass = os.getenv('FERNET_PASS')
     encode: str = 'UTF-8'
 
-    client_id_google = os.getenv('CLIENT_ID_GOOGLE')
-    client_secret_google = os.getenv('CLIENT_SECRET_GOOGLE')
+    client_id_google: str = os.getenv('CLIENT_ID_GOOGLE')
+    client_secret_google: str = os.getenv('CLIENT_SECRET_GOOGLE')
 
-    debug = int(os.getenv('DEBUG')) or 0
+    debug: int = int(os.getenv('DEBUG')) or 0
+
+    jwt_secret_key: str = os.getenv('JWT_SECRET_KEY')
+    jwt_expire_minutes: int = int(os.getenv('JWT_EXPIRE_MINUTES'))
