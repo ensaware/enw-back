@@ -3,14 +3,20 @@ from enum import Enum, unique
 
 @unique
 class Error(Enum):
-    QR_CODE_READ = 'Error leyendo la información del código QR.'
-    QR_CODE_EMAIL = 'El correo electrónico no pertenece al código QR.'
+    QR_CODE_READ = 'Error al leer la información del código QR.'
+    QR_CODE_AUTH = 'No estás autorizado(a) para leer el código QR.'
+    FAILED_CREATE_JWT = 'Error al crear el token.'
+    EXPIRED_TOKEN = 'Token expirado.'
+    REFRESH_TOKEN_FAILED = 'No se puedo actulizar el token. Asegúrese de enviar el refresh token correcto.'
 
 
 @unique
 class Validate(Enum):
     INVALID_EMAIL = 'Corre electrónico invalido.'
     INVALID_PROVIDER = 'Proveedor no valido.'
+    INVALID_JWT = 'Token no valido.'
+    INVALID_REFRESH_TOKEN = 'refresh token no válido.'
+    INVALID_USER = 'Usuario no válido.'
 
 
 @unique
