@@ -1,112 +1,94 @@
+import logging
+
 from fastapi import APIRouter, Depends, status, Request, Response, UploadFile
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from typing import Union
 
+
+from exception.ensaware import EnsawareException, EnsawareExceptionBase
+from user.v1 import DecryptedToken, schema
+from user.v1.schema import TokenData
 from utils.database import ENGINE, get_db
+
 from . import QR
-from . import crud, models, schema
+from . import models, schema
 
 
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[Depends(DecryptedToken.get_token)],
+    responses={
+        400: {
+            'model': EnsawareExceptionBase
+        },
+        401: {
+            'model': EnsawareExceptionBase
+        }
+    },
+)
 models.Base.metadata.create_all(bind=ENGINE)
 
-
-@router.post(
-    '/',
-    status_code=status.HTTP_201_CREATED,
-    summary='Prueba',
-    response_model=schema.QRCode
-)
-def create_qr_code(
-    qr_code: schema.QRCodeBase,
-    db: Session = Depends(get_db)
-):
-    """
-    Create an item with all the information:
-
-    - **name**: each item must have a name
-    - **description**: a long description
-    - **price**: required
-    - **tax**: if the item doesn't have tax, you can omit this
-    - **tags**: a set of unique tag strings for this item
-    \f
-    :param item: User input.
-    """
-    return crud.create_qr_code(
-        db,
-        qr_code
-    )
+get_token = router.dependencies[0]
 
 
 @router.get(
-    '/{id}',
-    status_code=status.HTTP_200_OK,
-    response_model=schema.QRCode,
-    responses={
-        204: {'model': None}
-    }
-)
-def get_qr_code(
-    id: str,
-    response: Response,
-    db: Session = Depends(get_db),
-):
-    qr_code = crud.get_qr_code(
-        db,
-        id
-    )
-
-    if qr_code:
-        return qr_code
-    
-    response.status_code = status.HTTP_204_NO_CONTENT
-    return response
-
-
-@router.get(
-    '/{email}/generate',
+    '/generate',
     status_code=status.HTTP_200_OK,
 )
-def qr_code_generate(
-    request: Request,
-    email: str,
+def generate(
+    token: TokenData = get_token,
     background: Union[str, None] = None,
     color: Union[str, None] = None,
     show_logo: bool = True,
     db: Session = Depends(get_db),
 ):
-    url = str(request.base_url)
-    result = QR(db)
-    qr = result.generate(email, url, show_logo, background, color)
-    
-    return Response(content=qr, media_type='image/png')
+    try:
+        result = QR(db)
+        qr = result.generate(token.sub, show_logo, background, color)
+
+        return Response(content=qr, media_type='image/png')
+    except EnsawareException as enw:
+        logging.exception(enw)
+        raise enw
 
 
 @router.get(
-    '/{email}/read',
+    '/read',
     status_code=status.HTTP_200_OK,
-    response_model=schema.QRCode,
+    response_model=schema.UserHistory,
 )
 def qr_code_read(
-    email: str,
     token: str,
+    token_data: TokenData = get_token,
     db: Session = Depends(get_db),
 ):
-    result = QR(db)
-    return result.read(email, token)
+    try:
+        result = QR(db)
+        return result.read(token_data, token)
+    except EnsawareException as enw:
+        logging.exception(enw)
+        raise enw
 
 
 @router.post(
-    '/{email}/read',
-    status_code=status.HTTP_200_OK,
-    response_model=schema.QRCode,
+    '/read/image',
+    status_code=status.HTTP_303_SEE_OTHER,
 )
-async def qr_code_read_imagen(
-    email: str,
+async def read_imagen(
+    request: Request,
     image: UploadFile,
     db: Session = Depends(get_db),
 ):
-    contents = await image.read()
-    result = QR(db)
-    return result.read_imagen(email, contents)
+    try:
+        contents = await image.read()
+        result = QR(db)
+        token_id = result.read_image(contents)
+
+        index: int = str(request.url).index('/image')
+        url: str = f'{str(request.url)[0: index]}/?token={token_id}'
+
+        return RedirectResponse(url, status.HTTP_303_SEE_OTHER)
+    except EnsawareException as enw:
+        logging.exception(enw)
+        raise enw
