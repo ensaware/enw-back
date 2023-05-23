@@ -1,6 +1,8 @@
 from enum import Enum, unique
 
-from exception.provider import ProviderValidate, Validate
+from fastapi import status
+from exception import TypeMessage, Validate
+from exception.ensaware import EnsawareException
 from .google import GoogleProvider
 
 
@@ -15,4 +17,4 @@ class SelectProvider:
         if provider == Provider.GOOGLE:
             return GoogleProvider(url_callback)
         else:
-            raise ProviderValidate(Validate.INVALID_PROVIDER)
+            raise EnsawareException(status.HTTP_400_BAD_REQUEST, TypeMessage.VALIDATION.value, Validate.INVALID_PROVIDER.value)

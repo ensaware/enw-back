@@ -16,3 +16,8 @@ class Auth20(ABC):
     @abstractmethod
     def get_data(self):
         pass
+
+
+    @abstractmethod
+    def refresh_token(self):
+        pass
