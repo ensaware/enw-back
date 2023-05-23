@@ -18,7 +18,7 @@ class Career(Base):
     created = Column(TIMESTAMP, default=UTC)
     modified = Column(TIMESTAMP, default=None)
 
-    users = relationship('User', back_populates='career')
+    user = relationship('User', back_populates='career')
 
 
 class Profile(Base):
@@ -30,7 +30,7 @@ class Profile(Base):
     created = Column(TIMESTAMP, default=UTC)
     modified = Column(TIMESTAMP, default=None)
 
-    users = relationship('User', back_populates='profile')
+    user = relationship('User', back_populates='profile')
 
 
 class User(Base):
@@ -49,5 +49,6 @@ class User(Base):
     created = Column(TIMESTAMP, default=UTC)
     modified = Column(TIMESTAMP, default=None)
 
-    profile = relationship('Profile', back_populates='users')
-    career = relationship('Career', back_populates='users')
+    profile = relationship('Profile', back_populates='user')
+    career = relationship('Career', back_populates='user')
+    historic_qr_code = relationship('HistoricQrCode', back_populates='user')
