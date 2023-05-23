@@ -71,3 +71,7 @@ class TokenData(BaseModel):
     exp: int
     iat: int
     sub: str
+
+
+class RefreshToken(BaseModel):
+    refresh_token: str
