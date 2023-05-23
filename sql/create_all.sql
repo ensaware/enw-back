@@ -60,3 +60,20 @@ CREATE TABLE IF NOT EXISTS user (
 
 -- Create indexes
 CREATE INDEX idx_user_provider ON user (provider);
+
+
+-- --------------------------------
+-- Create historic_qr_code table --
+-- --------------------------------
+CREATE TABLE IF NOT EXISTS historic_qr_code (
+	id VARCHAR(60) NOT NULL DEFAULT (UUID()),
+	user_id VARCHAR(60) NOT NULL,
+	is_active BOOLEAN NOT NULL DEFAULT TRUE,
+	created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified TIMESTAMP NULL,
+	CONSTRAINT pk_historic_qr_code_id PRIMARY KEY (id)
+	-- CONSTRAINT fk_historic_qr_code_user_id FOREIGN KEY (user_id) REFERENCES user (id),
+);
+
+-- Create indexes
+CREATE INDEX idx_historic_qr_code_id ON historic_qr_code (user_id);
