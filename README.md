@@ -8,12 +8,12 @@ Para ejecutar el proyecto **Código QR** se puede realizar de dos maneras:
 2. [Docker. `recomendado`](#Docker)
 
 Para ambos casos, se debe de crear un archivo en la raíz del proyecto con el nombre: `.env`. Dentro del archivo ingresar los valores de las variables:
-```bash
+```env
 # Database
 DATABASE_HOST=""
 DATABASE_USERNAME=""
 DATABASE_PASSWORD=""
-DATABASE_PORT=
+DATABASE_PORT=3306
 DATABASE_NAME=""
 
 # Fernet
@@ -24,11 +24,11 @@ CLIENT_ID_GOOGLE=""
 CLIENT_SECRET_GOOGLE=""
 
 # Debug
-DEBUG=
+DEBUG=0
 
 # JWT
 JWT_SECRET_KEY=""
-JWT_EXPIRE_MINUTES=
+JWT_EXPIRE_MINUTES=60
 ```
 
 ## Localmente
