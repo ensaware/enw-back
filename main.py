@@ -1,7 +1,6 @@
 import os
 
 from fastapi import FastAPI
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from exception.ensaware import EnsawareException, EnsawareExceptionHandler
 from qr_code.v1.router import router as qr_code
@@ -22,8 +21,6 @@ app.exception_handler(EnsawareException)(ensaware_exception_handler.ensaware)
 
 if settings.debug == 1:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-else:
-    app.add_middleware(HTTPSRedirectMiddleware)
 
 
 app.include_router(
