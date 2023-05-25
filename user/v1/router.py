@@ -7,11 +7,12 @@ from sqlalchemy.orm import Session
 from auth.provider import Provider, SelectProvider
 from exception.ensaware import EnsawareException, EnsawareExceptionBase
 from utils.database import ENGINE, get_db
-
+from utils.settings import Settings
 from . import crud, models, schema, DecryptedToken
 
 
 router = APIRouter()
+settings = Settings()
 models.Base.metadata.create_all(bind=ENGINE)
 
 
@@ -60,6 +61,12 @@ def login_provider(
     '''
     index: int = str(request.url).index('?')
     url: str = str(request.url)[0: index]
+
+    if settings.debug == 0:
+        url = url.replace('http', 'https')
+
+    print(url)
+
     token: schema.Token = SelectProvider.select(provider, url).get_data(db, request)
 
     return token
