@@ -69,6 +69,9 @@ def login_provider_auth(
     index: int = str(request.url).index('?')
     url: str = str(request.url)[0: index]
 
+    if settings.debug == 0:
+        url = url.replace('http', 'https')
+
     print('login_provider', url)
 
     token: schema.Token = SelectProvider.select(provider, url).get_data(db, request)
