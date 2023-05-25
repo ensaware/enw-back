@@ -8,6 +8,10 @@ from user.v1.router import router as user
 from utils.settings import Settings
 
 
+# Se deja habilitado hasta tener un dominio con el protocolo https
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
 settings = Settings()
 ensaware_exception_handler = EnsawareExceptionHandler()
 
@@ -18,9 +22,6 @@ app = FastAPI(
 )
 
 app.exception_handler(EnsawareException)(ensaware_exception_handler.ensaware)
-
-if settings.debug == 1:
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
 app.include_router(
