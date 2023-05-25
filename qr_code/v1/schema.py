@@ -1,6 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
 
+from user.v1.schema import User
+
 
 class QRCodeBase(BaseModel):
     email: EmailStr = Field(
@@ -34,6 +36,7 @@ class HistoricQrCode(HistoricQRCodeBase):
     is_active: bool
     created: datetime
     modified: datetime | None
+    user: User | None
 
     class Config:
         orm_mode = True

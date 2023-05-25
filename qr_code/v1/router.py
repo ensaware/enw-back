@@ -9,11 +9,10 @@ from typing import Union
 from exception.ensaware import EnsawareException, EnsawareExceptionBase
 from user.v1 import DecryptedToken, schema
 from user.v1.schema import TokenData
-from utils import replace_url_scheme
 from utils.database import ENGINE, get_db
 
 from . import QR
-from . import models, schema
+from . import crud, models, schema
 
 
 
@@ -57,12 +56,17 @@ def generate(
 @router.get(
     '/historic',
     status_code=status.HTTP_200_OK,
+    response_model=Union[list[schema.HistoricQrCode], None]
 )
-def generate(
+def historic(
     token: TokenData = get_token,
     db: Session = Depends(get_db),
 ):
-    return token
+    try:
+        return crud.get_historic_qr_code_user_id(db, token.sub)
+    except EnsawareException as enw:
+        logging.exception(enw)
+        raise enw
 
 
 @router.get(
