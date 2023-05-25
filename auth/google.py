@@ -114,7 +114,7 @@ class GoogleProvider(Auth20):
 
         get_user.refresh_token = self.encryption.encrypt(credentials._refresh_token)
         get_user.picture = token.get('picture', None)
-        get_user = User.from_orm(update_user_id(db, get_user.id, get_user))
+        get_user = update_user_id(db, get_user.id, get_user)
         
         
         return self.__jwt.encode(get_user)

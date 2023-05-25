@@ -26,10 +26,12 @@ def get_user_id(db: Session, id: str) -> models.User:
 
 
 def get_user_provider(db: Session, provider_id: str) -> models.User:
-    return db.query(models.User).filter(models.User.provider_id == provider_id, models.User.is_active == True).first()
+    user = db.query(models.User).filter(models.User.provider_id == provider_id, models.User.is_active == True).first()
+
+    return schema.User.from_orm(user)
 
 
-def update_user_id(db: Session, id: str, update_user: schema.User):
+def update_user_id(db: Session, id: str, update_user: schema.User) -> models.User:
     user_query = db.query(models.User).filter(models.User.id == id, models.User.is_active == True)
 
     user = user_query.first()
@@ -40,7 +42,7 @@ def update_user_id(db: Session, id: str, update_user: schema.User):
     user_query.update(update_user.dict(), synchronize_session='evaluate')
     db.commit()
 
-    return user_query.first()
+    return schema.User.from_orm(user_query.first())
 
 
 def get_profile(db: Session, profile: ProfileType) -> models.Profile:
