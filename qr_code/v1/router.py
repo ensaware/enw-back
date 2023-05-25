@@ -9,7 +9,9 @@ from typing import Union
 from exception.ensaware import EnsawareException, EnsawareExceptionBase
 from user.v1 import DecryptedToken, schema
 from user.v1.schema import TokenData
+from utils import replace_url_scheme
 from utils.database import ENGINE, get_db
+from utils.settings import Settings
 
 from . import QR
 from . import models, schema
@@ -27,6 +29,7 @@ router = APIRouter(
         }
     },
 )
+settings = Settings()
 models.Base.metadata.create_all(bind=ENGINE)
 
 get_token = router.dependencies[0]
@@ -51,6 +54,17 @@ def generate(
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw
+    
+
+@router.get(
+    '/historic',
+    status_code=status.HTTP_200_OK,
+)
+def generate(
+    token: TokenData = get_token,
+    db: Session = Depends(get_db),
+):
+    return token
 
 
 @router.get(
@@ -87,6 +101,9 @@ async def read_imagen(
 
         index: int = str(request.url).index('/image')
         url: str = f'{str(request.url)[0: index]}/?token={token_id}'
+
+        if settings.debug == 0:
+            url = replace_url_scheme(url)
 
         return RedirectResponse(url, status.HTTP_303_SEE_OTHER)
     except EnsawareException as enw:

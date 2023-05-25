@@ -1,5 +1,4 @@
 import logging
-from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends, status, Request
 from fastapi.responses import RedirectResponse
@@ -7,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from auth.provider import Provider, SelectProvider
 from exception.ensaware import EnsawareException, EnsawareExceptionBase
+from utils import replace_url_scheme
 from utils.database import ENGINE, get_db
 from utils.settings import Settings
 from . import crud, models, schema, DecryptedToken
@@ -15,15 +15,6 @@ from . import crud, models, schema, DecryptedToken
 router = APIRouter()
 settings = Settings()
 models.Base.metadata.create_all(bind=ENGINE)
-
-
-def _url(url: str):
-    scheme: str = urlparse(url).scheme
-
-    if scheme.lower() == 'http':
-        return url.replace('http', 'https')
-    
-    return url
 
 
 @router.get(
@@ -46,7 +37,7 @@ def login_provider(
     url: str = f'{str(request.url)}/auth'
 
     if settings.debug == 0:
-        url = _url(url)
+        url = replace_url_scheme(url)
 
     redirect_url, _ = SelectProvider.select(provider, url).authentication()
 
@@ -77,7 +68,7 @@ def login_provider_auth(
     url: str = str(request.url)[0: index]
 
     if settings.debug == 0:
-        url = _url(url)
+        url = replace_url_scheme(url)
 
     token: schema.Token = SelectProvider.select(provider, url).get_data(db, request)
 
