@@ -82,9 +82,6 @@ class GoogleProvider(Auth20):
 
         user = get_user_provider(db, provider_id)
 
-        if user:
-            User.from_orm(user)
-
         return new_token, user
     
 

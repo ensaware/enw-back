@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from fastapi import status
 from sqlalchemy.orm import Session
 
 from exception import TypeMessage, Validate
@@ -7,7 +8,7 @@ from exception.ensaware import EnsawareException
 from . import models, schema, ProfileType
 
 
-def create_user(db: Session, user: schema.UserBase) -> models.User:
+def create_user(db: Session, user: schema.UserBase) -> schema.User | None:
     user_dict = dict(user)
 
     if 'id' not in user_dict:
@@ -21,23 +22,38 @@ def create_user(db: Session, user: schema.UserBase) -> models.User:
     return schema.User.from_orm(db_user)
 
 
-def get_user_id(db: Session, id: str) -> models.User:
-    return db.query(models.User).filter(models.User.id == id, models.User.is_active == True).first()
+def get_user_id(db: Session, id: str) -> schema.User | None:
+    user = db.query(models.User).\
+            filter(models.User.id == id, models.User.is_active == True).\
+            first()
+    
+
+    if user:
+        return schema.User.from_orm(user)
+    
+    return None
 
 
-def get_user_provider(db: Session, provider_id: str) -> models.User:
-    user = db.query(models.User).filter(models.User.provider_id == provider_id, models.User.is_active == True).first()
+def get_user_provider(db: Session, provider_id: str) -> schema.User | None:
+    user = db.query(models.User).\
+            filter(
+                models.User.provider_id == provider_id, 
+                models.User.is_active == True
+            ).\
+            first()
 
-    return schema.User.from_orm(user)
+    if user:
+        return schema.User.from_orm(user)
+    
+    return None
 
 
-def update_user_id(db: Session, id: str, update_user: schema.User) -> models.User:
-    user_query = db.query(models.User).filter(models.User.id == id, models.User.is_active == True)
+def update_user_id(db: Session, id: str, update_user: schema.User) -> schema.User | None:
+    user_query = db.query(models.User).\
+            filter(models.User.id == id, models.User.is_active == True)
 
-    user = user_query.first()
-
-    if not(user):
-        raise EnsawareException(404, TypeMessage.VALIDATION.value, Validate.INVALID_USER.value)
+    if not(user_query.first()):
+        raise EnsawareException(status.HTTP_404_NOT_FOUND, TypeMessage.VALIDATION.value, Validate.INVALID_USER.value)
     
     user_query.update(update_user.dict(), synchronize_session='evaluate')
     db.commit()
@@ -45,5 +61,12 @@ def update_user_id(db: Session, id: str, update_user: schema.User) -> models.Use
     return schema.User.from_orm(user_query.first())
 
 
-def get_profile(db: Session, profile: ProfileType) -> models.Profile:
-    return db.query(models.Profile).filter(models.Profile.name == profile.value).first()
+def get_profile(db: Session, profile: ProfileType) -> schema.Profile | None:
+    profile = db.query(models.Profile).\
+            filter(models.Profile.name == profile.value).\
+            first()
+    
+    if profile:
+        return schema.Profile.from_orm(profile)
+    
+    return None
