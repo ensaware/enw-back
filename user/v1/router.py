@@ -34,6 +34,13 @@ def login_provider(
     **Importante:** Por el momento solo se tiene el proveedor Google.
     '''
     url: str = f'{str(request.url)}/auth'
+
+    if settings.debug == 0:
+        url = url.replace('http', 'https')
+
+
+    print('login_provider', url)
+
     redirect_url, _ = SelectProvider.select(provider, url).authentication()
 
     return RedirectResponse(redirect_url)
@@ -44,7 +51,7 @@ def login_provider(
     status_code=status.HTTP_200_OK,
     response_model=schema.Token
 )
-def login_provider(
+def login_provider_auth(
     request: Request,
     provider: Provider,
     db: Session = Depends(get_db)
@@ -62,10 +69,7 @@ def login_provider(
     index: int = str(request.url).index('?')
     url: str = str(request.url)[0: index]
 
-    if settings.debug == 0:
-        url = url.replace('http', 'https')
-
-    print(url)
+    print('login_provider', url)
 
     token: schema.Token = SelectProvider.select(provider, url).get_data(db, request)
 
