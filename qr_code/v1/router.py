@@ -11,7 +11,6 @@ from user.v1 import DecryptedToken, schema
 from user.v1.schema import TokenData
 from utils import replace_url_scheme
 from utils.database import ENGINE, get_db
-from utils.settings import Settings
 
 from . import QR
 from . import models, schema
@@ -29,7 +28,6 @@ router = APIRouter(
         }
     },
 )
-settings = Settings()
 models.Base.metadata.create_all(bind=ENGINE)
 
 get_token = router.dependencies[0]
@@ -88,24 +86,17 @@ def qr_code_read(
 @router.post(
     '/read/image',
     status_code=status.HTTP_303_SEE_OTHER,
+    response_model=str
 )
 async def read_imagen(
-    request: Request,
     image: UploadFile,
     db: Session = Depends(get_db),
 ):
     try:
         contents = await image.read()
         result = QR(db)
-        token_id = result.read_image(contents)
 
-        index: int = str(request.url).index('/image')
-        url: str = f'{str(request.url)[0: index]}/?token={token_id}'
-
-        if settings.debug == 0:
-            url = replace_url_scheme(url)
-
-        return RedirectResponse(url, status.HTTP_303_SEE_OTHER)
+        return result.read_image(contents)
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw
