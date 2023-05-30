@@ -29,6 +29,10 @@ DEBUG=0
 # JWT
 JWT_SECRET_KEY=""
 JWT_EXPIRE_MINUTES=60
+
+#CORS
+CORS_ORIGINS="http://localhost:3000, http://localhost:8000"
+CORS_METHODS="DELETE, GET, POST, PUT, OPTIONS"
 ```
 
 ## Localmente

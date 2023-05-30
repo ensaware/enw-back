@@ -24,3 +24,6 @@ class Settings(BaseSettings):
 
     jwt_secret_key: str = os.getenv('JWT_SECRET_KEY')
     jwt_expire_minutes: int = int(os.getenv('JWT_EXPIRE_MINUTES'))
+
+    cors_origins: str =  os.getenv('CORS_ORIGINS')
+    cors_methods: str =  os.getenv('CORS_METHODS')
