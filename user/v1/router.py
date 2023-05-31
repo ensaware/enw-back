@@ -22,8 +22,8 @@ models.Base.metadata.create_all(bind=ENGINE)
     status_code=status.HTTP_200_OK
 )
 def login_provider(
-    request: Request,
     provider: Provider,
+    callback_url: str
 ):
     '''
     Permite iniciar sessión a través de OAuth.
@@ -34,7 +34,7 @@ def login_provider(
 
     **Importante:** Por el momento solo se tiene el proveedor Google.
     '''
-    url: str = f'{str(request.url)}/auth'
+    url: str = callback_url
 
     if settings.debug == 0:
         url = replace_url_scheme(url)
