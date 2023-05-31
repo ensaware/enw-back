@@ -1,10 +1,15 @@
-from urllib.parse import urlparse
+from urllib.parse import urlparse, ParseResult
 
 
 def replace_url_scheme(url: str):
-    scheme: str = urlparse(url).scheme
+    _urlparse: ParseResult = urlparse(url)
+    scheme: str = _urlparse.scheme.lower()
+    hostname: str = _urlparse.hostname.lower()
 
-    if scheme.lower() == 'http':
+    if hostname == 'localhost':
+        return url
+
+    if scheme == 'http':
         return url.replace('http', 'https')
     
     return url
