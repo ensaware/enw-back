@@ -33,6 +33,9 @@ JWT_EXPIRE_MINUTES=60
 #CORS
 CORS_ORIGINS="http://localhost:3000, http://localhost:8000"
 CORS_METHODS="DELETE, GET, POST, PUT, OPTIONS"
+
+#Callback url login front
+CALLBACK_URL_FRONT=""
 ```
 
 ## Localmente

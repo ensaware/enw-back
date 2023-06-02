@@ -27,3 +27,5 @@ class Settings(BaseSettings):
 
     cors_origins: str =  os.getenv('CORS_ORIGINS')
     cors_methods: str =  os.getenv('CORS_METHODS')
+
+    callback_url_front: str = os.getenv('CALLBACK_URL_FRONT')

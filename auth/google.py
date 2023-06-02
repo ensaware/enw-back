@@ -95,7 +95,7 @@ class GoogleProvider(Auth20):
         )
     
 
-    def get_data(self, db: Session, request: Request) -> Token:
+    def get_data(self, db: Session, request: Request) -> str:
         flow = self.__get_config()
         flow.fetch_token(
             authorization_response=str(request.url),
@@ -111,10 +111,15 @@ class GoogleProvider(Auth20):
 
         get_user.refresh_token = self.encryption.encrypt(credentials._refresh_token)
         get_user.picture = token.get('picture', None)
-        get_user = update_user_id(db, get_user.id, get_user)
+        get_user: User = update_user_id(db, get_user.id, get_user)
+
+        token_data: Token = self.__jwt.encode(get_user)
+        params: str = ''
+
+        for key, value in token_data.dict().items():
+            params += f'&{key}={value}'
         
-        
-        return self.__jwt.encode(get_user)
+        return f'{self.__settings.callback_url_front}?proyect=ensaware{params}'
     
 
     def refresh_token(self, db: Session, token: str) -> Token:

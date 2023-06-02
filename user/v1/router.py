@@ -19,11 +19,11 @@ models.Base.metadata.create_all(bind=ENGINE)
 
 @router.get(
     '/login/{provider}',
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_307_TEMPORARY_REDIRECT
 )
 def login_provider(
-    provider: Provider,
-    callback_url: str
+    request: Request,
+    provider: Provider
 ):
     '''
     Permite iniciar sessión a través de OAuth.
@@ -34,7 +34,7 @@ def login_provider(
 
     **Importante:** Por el momento solo se tiene el proveedor Google.
     '''
-    url: str = callback_url
+    url: str = f'{str(request.url)}/auth'
 
     if settings.debug == 0:
         url = replace_url_scheme(url)
@@ -46,7 +46,7 @@ def login_provider(
 
 @router.get(
     '/login/{provider}/auth',
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_307_TEMPORARY_REDIRECT,
     response_model=schema.Token
 )
 def login_provider_auth(
@@ -70,9 +70,9 @@ def login_provider_auth(
     if settings.debug == 0:
         url = replace_url_scheme(url)
 
-    token: schema.Token = SelectProvider.select(provider, url).get_data(db, request)
+    redirect_url: str = SelectProvider.select(provider, url).get_data(db, request)
 
-    return token
+    return RedirectResponse(redirect_url)
 
 
 @router.get(
