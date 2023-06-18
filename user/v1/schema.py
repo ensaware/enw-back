@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, EmailStr
 
 
 class CareerBase(BaseModel):
@@ -56,8 +56,31 @@ class User(UserBase):
     created: datetime
     modified: datetime | None
 
+
     class Config:
         orm_mode = True
+
+
+class UserRead(BaseModel):
+    career: Career | None
+    created: datetime
+    display_name: str
+    email: EmailStr
+    id: str
+    is_active: bool
+    modified: datetime | None
+    provider_id: str
+    provider: str
+    picture: str | None
+    profile: Profile | None
+
+
+    class Config:
+        orm_mode = True
+
+
+class UserUpdate(BaseModel):
+    career_id: str | None
 
 
 class Token(BaseModel):

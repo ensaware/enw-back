@@ -82,7 +82,7 @@ def login_provider_auth(
             'model': EnsawareExceptionBase
         }
     },
-    response_model=schema.User,
+    response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
 def user_me(
@@ -96,6 +96,31 @@ def user_me(
     '''
     try:
         return crud.get_user_id(db, token.sub)
+    except EnsawareException as enw:
+        logging.exception(enw)
+        raise enw
+    
+
+@router.patch(
+    '/me',
+    responses={
+        401: {
+            'model': EnsawareExceptionBase
+        }
+    },
+    response_model=schema.UserRead,
+    status_code=status.HTTP_200_OK,
+)
+def user_update_me(
+    update_user: schema.UserUpdate,
+    token: schema.TokenData = Depends(DecryptedToken.get_token),
+    db: Session = Depends(get_db)
+):
+    try:
+        user_model = crud.get_user_id(db, token.sub)
+        updated_user = user_model.copy(update=update_user.dict(exclude_unset=True))
+
+        return crud.update_user_id(db, token.sub, updated_user, True)
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw
