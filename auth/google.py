@@ -9,14 +9,13 @@ from sqlalchemy.orm import Session
 
 from exception import Error, TypeMessage, Validate
 from exception.ensaware import EnsawareException
-from utils.settings import Settings
 from user.v1 import JWT
 
 from user.v1 import ProfileType
 from user.v1.crud import create_user, get_profile, get_user_provider, update_user_id
 from user.v1.schema import Profile, Token, User, UserBase
 
-from . import Auth20
+from . import OAuth20
 
 
 SCOPES = [
@@ -26,13 +25,13 @@ SCOPES = [
 ]
 
 
-class GoogleProvider(Auth20):
+class GoogleProvider(OAuth20):
     def __init__(self, url_callback: str) -> None:
         super().__init__(url_callback)
 
-        self.__settings = Settings()
+        self.__settings = self.encryption._settings
         self.__jwt = JWT()
-        self.__baseUrl = 'https://oauth2.googleapis.com'
+        self.__base_url = 'https://oauth2.googleapis.com'
 
 
     def __get_config(self) -> Flow:
@@ -42,7 +41,7 @@ class GoogleProvider(Auth20):
                     'client_id': self.__settings.client_id_google,
                     'client_secret': self.__settings.client_secret_google,
                     'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
-                    'token_uri': f'{self.__baseUrl}/token',
+                    'token_uri': f'{self.__base_url}/token',
                     'redirect_uris': ['urn:ietf:wg:oauth:2.0:oob']
                 }
             },
@@ -139,7 +138,7 @@ class GoogleProvider(Auth20):
         }
 
         response = api_requests.post(
-            f'{self.__baseUrl}/token',
+            f'{self.__base_url}/token',
             data=body
         )
 
