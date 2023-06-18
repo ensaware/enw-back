@@ -2,6 +2,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
 
 from exception.ensaware import EnsawareException, EnsawareExceptionHandler
 from qr_code.v1.router import router as qr_code
@@ -29,6 +30,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.exception_handler(EnsawareException)(ensaware_exception_handler.ensaware)
+
+add_pagination(app)
 
 
 app.include_router(

@@ -1,7 +1,9 @@
 import logging
 
-from fastapi import APIRouter, Depends, status, Request, Response, UploadFile
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, status, Response, UploadFile
+from fastapi_pagination.links import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
+from pydantic import Field
 from sqlalchemy.orm import Session
 from typing import Union
 
@@ -14,6 +16,10 @@ from utils.database import ENGINE, get_db
 from . import QR
 from . import crud, models, schema
 
+
+Page = Page.with_custom_options(
+    size=Field(10, ge=1)
+)
 
 
 router = APIRouter(
@@ -56,14 +62,14 @@ def generate(
 @router.get(
     '/historic',
     status_code=status.HTTP_200_OK,
-    response_model=Union[list[schema.HistoricQrCode], None]
+    response_model=Page [schema.HistoricQrCode]
 )
 def historic(
     token: TokenData = get_token,
     db: Session = Depends(get_db),
 ):
     try:
-        return crud.get_historic_qr_code_user_id(db, token.sub)
+        return paginate(crud.get_historic_qr_code_user_id(db, token.sub))
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw

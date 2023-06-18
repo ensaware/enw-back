@@ -36,6 +36,8 @@ def get_historic_qr_code_id(db: Session, id: str) -> models.HistoricQrCode:
 
 
 def get_historic_qr_code_user_id(db: Session, user_id: str) -> list[schema.HistoricQrCode]:
-    historic = db.query(models.HistoricQrCode).filter(models.HistoricQrCode.user_id == user_id).all()
+    historic = db.query(models.HistoricQrCode)\
+        .filter(models.HistoricQrCode.user_id == user_id)\
+        .order_by(models.HistoricQrCode.created)
 
     return historic
