@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-from auth.provider import Provider, SelectProvider
+from oauth.provider import Provider, SelectProvider
 from exception.ensaware import EnsawareException, EnsawareExceptionBase
 from utils import replace_url_scheme
 from utils.database import ENGINE, get_db
