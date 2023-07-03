@@ -77,11 +77,6 @@ def login_provider_auth(
 
 @router.get(
     '/me',
-    responses={
-        401: {
-            'model': EnsawareExceptionBase
-        }
-    },
     response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
@@ -103,11 +98,6 @@ def user_me(
 
 @router.patch(
     '/me',
-    responses={
-        401: {
-            'model': EnsawareExceptionBase
-        }
-    },
     response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
@@ -128,11 +118,6 @@ def user_update_me(
 
 @router.post(
     '/refresh/token/{provider}',
-    responses={
-        400: {
-            'model': EnsawareExceptionBase
-        }
-    },
     response_model=schema.Token,
     status_code=status.HTTP_200_OK,
 )

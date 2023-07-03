@@ -24,14 +24,6 @@ Page = Page.with_custom_options(
 
 router = APIRouter(
     dependencies=[Depends(DecryptedToken.get_token)],
-    responses={
-        400: {
-            'model': EnsawareExceptionBase
-        },
-        401: {
-            'model': EnsawareExceptionBase
-        }
-    },
 )
 models.Base.metadata.create_all(bind=ENGINE)
 
