@@ -81,20 +81,3 @@ class UserRead(BaseModel):
 
 class UserUpdate(BaseModel):
     career_id: str | None
-
-
-class Token(BaseModel):
-    token: str
-    token_type: str = 'Bearer'
-    refresh_token: str
-
-
-class TokenData(BaseModel):
-    email: EmailStr
-    exp: int
-    iat: int
-    sub: str
-
-
-class RefreshToken(BaseModel):
-    refresh_token: str
