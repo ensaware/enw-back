@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 
+from authorization.v1.router import router as authorization
 from exception.ensaware import EnsawareException, EnsawareExceptionBase, EnsawareExceptionHandler
 from qr_code.v1.router import router as qr_code
 from user.v1.router import router as user
@@ -44,14 +45,20 @@ add_pagination(app)
 
 
 app.include_router(
+    authorization,
+    prefix='/v1/authorization',
+    tags=['v1 - authorization']
+)
+
+app.include_router(
     qr_code,
     prefix='/v1/qr-code',
-    tags=['V1 - QR Code'],
+    tags=['v1 - qr code'],
     deprecated=True
 )
 
 app.include_router(
     user,
     prefix='/v1/user',
-    tags=['V1 - User']
+    tags=['v1 - user']
 )
