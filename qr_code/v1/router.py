@@ -7,26 +7,23 @@ from pydantic import Field
 from sqlalchemy.orm import Session
 from typing import Union
 
-
+from authorization.v1.schema import TokenData
 from exception.ensaware import EnsawareException
 from oauth.security import Security
 from user.v1 import schema
-from user.v1.schema import TokenData
 from utils.database import ENGINE, get_db
 
 from . import QR
-from . import crud, models, schema
+from . import crud, schema
 
 
 Page = Page.with_custom_options(
     size=Field(10, ge=1)
 )
 
-
 router = APIRouter(
     dependencies=[Depends(Security.get_token)],
 )
-models.Base.metadata.create_all(bind=ENGINE)
 
 get_token = router.dependencies[0]
 

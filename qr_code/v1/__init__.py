@@ -10,10 +10,10 @@ import pyqrcode
 from PIL import Image
 from sqlalchemy.orm import Session
 
+from authorization.v1.schema import TokenData
 from exception import Error, TypeMessage, Validate
 from exception.ensaware import EnsawareException
 from user.v1.crud import get_user_id
-from user.v1.schema import TokenData
 from utils.encryption import Encryption
 
 

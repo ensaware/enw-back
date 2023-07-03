@@ -7,13 +7,13 @@ from google.auth.transport import requests
 import requests as api_requests
 from sqlalchemy.orm import Session
 
+from authorization.v1.schema import Token
 from exception import Error, TypeMessage, Validate
 from exception.ensaware import EnsawareException
 from oauth.security import Security
-
 from user.v1 import ProfileType
 from user.v1.crud import create_user, get_profile, get_user_provider, update_user_id
-from user.v1.schema import Profile, Token, User, UserBase
+from user.v1.schema import Profile, User, UserBase
 
 from . import OAuth20
 
