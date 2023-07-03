@@ -6,10 +6,11 @@ from fastapi import Depends, status
 from fastapi.security import HTTPBearer
 from typing import Annotated
 
+from authorization.v1.schema import Token, TokenData
 from exception import Error, TypeMessage, Validate
 from exception.ensaware import EnsawareException
 from utils.settings import Settings
-from user.v1.schema import Token, TokenData, User
+from user.v1.schema import User
 
 
 settings = Settings()
@@ -38,7 +39,7 @@ class Security:
             'email': user.email,
             'exp': int(exp.timestamp()),
             'iat': int(now.timestamp()),
-            'profile_id': user.profile_id,
+            'profile': user.profile_id,
             'sub': user.id
         }
 
