@@ -8,8 +8,9 @@ from sqlalchemy.orm import Session
 from typing import Union
 
 
-from exception.ensaware import EnsawareException, EnsawareExceptionBase
-from user.v1 import DecryptedToken, schema
+from exception.ensaware import EnsawareException
+from oauth.security import Security
+from user.v1 import schema
 from user.v1.schema import TokenData
 from utils.database import ENGINE, get_db
 
@@ -23,7 +24,7 @@ Page = Page.with_custom_options(
 
 
 router = APIRouter(
-    dependencies=[Depends(DecryptedToken.get_token)],
+    dependencies=[Depends(Security.get_token)],
 )
 models.Base.metadata.create_all(bind=ENGINE)
 

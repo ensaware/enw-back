@@ -4,12 +4,13 @@ from fastapi import APIRouter, Depends, status, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
+from exception.ensaware import EnsawareException
 from oauth.provider import Provider, SelectProvider
-from exception.ensaware import EnsawareException, EnsawareExceptionBase
+from oauth.security import Security
 from utils import replace_url_scheme
 from utils.database import ENGINE, get_db
 from utils.settings import Settings
-from . import crud, models, schema, DecryptedToken
+from . import crud, models, schema
 
 
 router = APIRouter()
@@ -81,7 +82,7 @@ def login_provider_auth(
     status_code=status.HTTP_200_OK,
 )
 def user_me(
-    token: schema.TokenData = Depends(DecryptedToken.get_token),
+    token: schema.TokenData = Depends(Security.get_token),
     db: Session = Depends(get_db)
 ):
     '''
@@ -103,7 +104,7 @@ def user_me(
 )
 def user_update_me(
     update_user: schema.UserUpdate,
-    token: schema.TokenData = Depends(DecryptedToken.get_token),
+    token: schema.TokenData = Depends(Security.get_token),
     db: Session = Depends(get_db)
 ):
     try:
