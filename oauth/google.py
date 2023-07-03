@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from exception import Error, TypeMessage, Validate
 from exception.ensaware import EnsawareException
-from user.v1 import JWT
+from oauth.security import Security
 
 from user.v1 import ProfileType
 from user.v1.crud import create_user, get_profile, get_user_provider, update_user_id
@@ -30,7 +30,7 @@ class GoogleProvider(OAuth20):
         super().__init__(url_callback)
 
         self.__settings = self.encryption._settings
-        self.__jwt = JWT()
+        self.__security = Security()
         self.__base_url = 'https://oauth2.googleapis.com'
 
 
@@ -79,7 +79,7 @@ class GoogleProvider(OAuth20):
 
         provider_id: str = new_token.get('sub', None)
 
-        user = get_user_provider(db, provider_id)
+        user: User = get_user_provider(db, provider_id)
 
         return new_token, user
     
@@ -112,7 +112,7 @@ class GoogleProvider(OAuth20):
         get_user.picture = token.get('picture', None)
         get_user: User = update_user_id(db, get_user.id, get_user)
 
-        token_data: Token = self.__jwt.encode(get_user)
+        token_data: Token = self.__security.jwt_encode(get_user)
         params: str = ''
 
         for key, value in token_data.dict().items():
@@ -146,7 +146,7 @@ class GoogleProvider(OAuth20):
             json_response = response.json()
             _, get_user = self.__get_token(db, json_response['id_token'])
 
-            return self.__jwt.encode(get_user)
+            return self.__security.jwt_encode(get_user)
         except EnsawareException as enw:
             logging.exception(enw)
             raise enw
