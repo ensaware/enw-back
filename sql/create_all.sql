@@ -62,6 +62,50 @@ CREATE TABLE IF NOT EXISTS user (
 CREATE INDEX idx_user_provider ON user (provider);
 
 
+-- ----------------------------
+-- Create content_type table --
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS content_type (
+	id VARCHAR(60) NOT NULL DEFAULT (UUID()),
+	model VARCHAR(100) NOT NULL,
+	created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified TIMESTAMP NULL,
+	CONSTRAINT pk_content_type_id PRIMARY KEY (id),
+	CONSTRAINT unq_content_type_model UNIQUE (model)
+);
+
+
+-- --------------------
+-- Create permission --
+-- --------------------
+CREATE TABLE IF NOT EXISTS permission (
+	id VARCHAR(60) NOT NULL DEFAULT (UUID()),
+	content_type_id VARCHAR(60) NOT NULL,
+	code_name VARCHAR(255) NOT NULL,
+	created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified TIMESTAMP NULL,
+	CONSTRAINT pk_permission_id PRIMARY KEY (id),
+	-- CONSTRAINT fk_permission_content_type_id FOREIGN KEY (content_type_id) REFERENCES content_type (id),
+	CONSTRAINT unq_permission_code_name UNIQUE (code_name)
+);
+
+
+-- ----------------------------
+-- Create permission_profile --
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS permission_profile (
+	id VARCHAR(60) NOT NULL DEFAULT (UUID()),
+	permission_id VARCHAR(60) NOT NULL,
+	profile_id VARCHAR(60) NOT NULL,
+	created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified TIMESTAMP NULL,
+	CONSTRAINT pk_permission_profile_id PRIMARY KEY (id),
+	-- CONSTRAINT fk_permission_profile_profile_id FOREIGN KEY (profile_id) REFERENCES profile (id),
+	-- CONSTRAINT fk_permission_profile_permission_id FOREIGN KEY (permission_id) REFERENCES permission (id),
+	CONSTRAINT unq_permission_profile UNIQUE (permission_id, profile_id)
+);
+
+
 -- --------------------------------
 -- Create historic_qr_code table --
 -- --------------------------------
@@ -76,4 +120,4 @@ CREATE TABLE IF NOT EXISTS historic_qr_code (
 );
 
 -- Create indexes
-CREATE INDEX idx_historic_qr_code_id ON historic_qr_code (user_id);
+CREATE INDEX idx_historic_qr_code_user_id ON historic_qr_code (user_id);
