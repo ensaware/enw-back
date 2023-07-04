@@ -12,12 +12,16 @@ from . import crud, schema
 
 
 router = APIRouter(
-    dependencies=[Depends(Security.get_token)],
+    dependencies=[
+        Depends(Security.get_token),
+        Depends(get_db)
+    ],
 )
 
 settings = Settings()
 
 get_token = router.dependencies[0]
+get_db = router.dependencies[1]
 
 
 @router.get(
@@ -27,7 +31,7 @@ get_token = router.dependencies[0]
 )
 def user_me(
     token: TokenData = get_token,
-    db: Session = Depends(get_db)
+    db: Session = get_db
 ):
     '''
     Entrega información del usuario.
@@ -35,7 +39,7 @@ def user_me(
     **Nota:** Se debe de enviar en el encabezado el token del usuario.
     '''
     try:
-        return crud.get_user_id(db, token.sub)
+        return crud.get_user_id(db, token.sub, True)
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw
@@ -49,7 +53,7 @@ def user_me(
 def user_update_me(
     update_user: schema.UserUpdate,
     token: TokenData = get_token,
-    db: Session = Depends(get_db)
+    db: Session = get_db
 ):
     try:
         user_model = crud.get_user_id(db, token.sub)
