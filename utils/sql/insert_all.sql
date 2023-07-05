@@ -42,3 +42,25 @@ INSERT INTO career (name)
     SELECT 'Técnica Profesional en Procesos Logísticos y de Comercio Exterior' UNION
     SELECT 'Técnica Profesional en Procesos Turísticos y Hoteleros' UNION
     SELECT 'Derecho';
+
+
+-- ----------------------
+-- Insert content_type --
+-- ----------------------
+INSERT INTO content_type (model)
+    SELECT 'permission' UNION
+    SELECT 'user';
+
+
+-- --------------------
+-- Insert permission --
+-- --------------------
+INSERT INTO permission (content_type_id, code_name, description)
+    SELECT id, CONCAT(model, ':create'), 'Crear permisos' FROM content_type WHERE model = 'permission' UNION
+    SELECT id, CONCAT(model, ':read'), 'Leer permisos' FROM content_type WHERE model = 'permission' UNION
+    SELECT id, CONCAT(model, ':update'), 'Editar permisos' FROM content_type WHERE model = 'permission' UNION
+    SELECT id, CONCAT(model, ':delete'), 'Eliminar permisos' FROM content_type WHERE model = 'permission' UNION
+    SELECT id, CONCAT(model, ':create'), 'Crear Usuarios' FROM content_type WHERE model = 'user' UNION
+    SELECT id, CONCAT(model, ':read'), 'Leer Usuarios' FROM content_type WHERE model = 'user' UNION
+    SELECT id, CONCAT(model, ':update'), 'Editar Usuarios' FROM content_type WHERE model = 'user' UNION
+    SELECT id, CONCAT(model, ':delete'), 'Eliminar Usuarios' FROM content_type WHERE model = 'user'
