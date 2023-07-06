@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 from typing import Union
 
 from authorization.v1.schema import TokenData
-from exception.ensaware import EnsawareException
-from oauth.security import Security
+from utils.exception.ensaware import EnsawareException
+from utils.oauth.security import Security
 from user.v1 import schema
 from utils.database import ENGINE, get_db
 

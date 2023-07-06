@@ -7,8 +7,8 @@ from fastapi.security import HTTPBearer
 from typing import Annotated
 
 from authorization.v1.schema import Token, TokenData
-from exception import Error, TypeMessage, Validate
-from exception.ensaware import EnsawareException
+from utils.exception import Error, TypeMessage, Validate
+from utils.exception.ensaware import EnsawareException
 from utils.settings import Settings
 from user.v1.schema import User
 

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 
 from authorization.v1.router import router as authorization
-from exception.ensaware import EnsawareException, EnsawareExceptionBase, EnsawareExceptionHandler
+from utils.exception.ensaware import EnsawareException, EnsawareExceptionBase, EnsawareExceptionHandler
 from qr_code.v1.router import router as qr_code
 from user.v1.router import router as user
 from utils.settings import Settings

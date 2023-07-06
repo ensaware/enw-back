@@ -3,8 +3,8 @@ from uuid import uuid4
 from fastapi import status
 from sqlalchemy.orm import Session
 
-from exception import TypeMessage, Validate
-from exception.ensaware import EnsawareException
+from utils.exception import TypeMessage, Validate
+from utils.exception.ensaware import EnsawareException
 from . import models, schema, ProfileType
 
 

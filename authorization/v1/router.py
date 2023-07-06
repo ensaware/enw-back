@@ -5,10 +5,10 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from authorization.v1.schema import Token, RefreshToken
-from exception.ensaware import EnsawareException
-from oauth.provider import Provider, SelectProvider
 from utils import replace_url_scheme
+from utils.oauth.provider import Provider, SelectProvider
 from utils.database import get_db
+from utils.exception.ensaware import EnsawareException
 from utils.settings import Settings
 
 

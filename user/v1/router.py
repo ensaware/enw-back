@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from authorization.v1.schema import TokenData
-from exception.ensaware import EnsawareException
-from oauth.security import Security
 from utils.database import get_db
+from utils.exception.ensaware import EnsawareException
+from utils.oauth.security import Security
 from utils.settings import Settings
 from . import crud, schema
 
