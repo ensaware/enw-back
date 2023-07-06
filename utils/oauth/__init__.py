@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from fastapi import Request
+
 from utils.encryption import Encryption
 
 
@@ -14,12 +16,12 @@ class OAuth20(ABC):
 
 
     @abstractmethod
-    def get_data(self):
+    def get_data(self, request: Request):
         pass
 
 
     @abstractmethod
-    def refresh_token(self):
+    def refresh_token(self, token: str):
         pass
 
 

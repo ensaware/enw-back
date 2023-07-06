@@ -22,7 +22,8 @@ settings = Settings()
 )
 def login_provider(
     request: Request,
-    provider: Provider
+    provider: Provider,
+    db: Session = Depends(get_db)
 ):
     '''
     Permite iniciar sessión a través de OAuth.
@@ -38,7 +39,7 @@ def login_provider(
     if settings.debug == 0:
         url = replace_url_scheme(url)
 
-    redirect_url, _ = SelectProvider.select(provider, url).authentication()
+    redirect_url, _ = SelectProvider.select(provider, url, db).authentication()
 
     return RedirectResponse(redirect_url)
 
@@ -69,7 +70,7 @@ def login_provider_auth(
     if settings.debug == 0:
         url = replace_url_scheme(url)
 
-    redirect_url: str = SelectProvider.select(provider, url).get_data(db, request)
+    redirect_url: str = SelectProvider.select(provider, url, db).get_data(request)
 
     return RedirectResponse(redirect_url)
 
@@ -91,7 +92,7 @@ def refresh_token(
     - `Token class` Respuesta del proveedor donde se entrege el token, token_type y refresh_token.
     '''
     try:
-        return SelectProvider.select(provider, '').refresh_token(db, refresh_token.refresh_token)
+        return SelectProvider.select(provider, '', db).refresh_token(refresh_token.refresh_token)
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw

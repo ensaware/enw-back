@@ -26,12 +26,13 @@ SCOPES = [
 
 
 class GoogleProvider(OAuth20):
-    def __init__(self, url_callback: str) -> None:
+    def __init__(self, url_callback: str, db: Session) -> None:
         super().__init__(url_callback)
 
+        self.__base_url = 'https://oauth2.googleapis.com'
+        self.__db = db
         self.__settings = self.encryption._settings
         self.__security = Security()
-        self.__base_url = 'https://oauth2.googleapis.com'
 
 
     def __get_config(self) -> Flow:
@@ -53,8 +54,8 @@ class GoogleProvider(OAuth20):
         return flow
 
 
-    def __create_user(self, db: Session, token: dict, credentials) -> User:
-        profile: Profile = get_profile(db, ProfileType.STUDENT)
+    def __create_user(self, token: dict, credentials) -> User:
+        profile: Profile = get_profile(self.__db, ProfileType.STUDENT)
 
         user_base = UserBase(
             provider_id = token.get('sub', None),
@@ -66,10 +67,10 @@ class GoogleProvider(OAuth20):
             refresh_token = self.encryption.encrypt(credentials._refresh_token),
         )
 
-        return create_user(db, user_base)
+        return create_user(self.__db, user_base)
     
 
-    def __get_token(self, db: Session, token: str) -> tuple[dict, User | None]:
+    def __get_token(self, token: str) -> tuple[dict, User | None]:
         new_token = id_token.verify_token(
             id_token=token,
             request=requests.Request(),
@@ -79,7 +80,7 @@ class GoogleProvider(OAuth20):
 
         provider_id: str = new_token.get('sub', None)
 
-        user: User = get_user_provider(db, provider_id)
+        user: User = get_user_provider(self.__db, provider_id)
 
         return new_token, user
     
@@ -94,7 +95,7 @@ class GoogleProvider(OAuth20):
         )
     
 
-    def get_data(self, db: Session, request: Request) -> str:
+    def get_data(self, request: Request) -> str:
         flow = self.__get_config()
         flow.fetch_token(
             authorization_response=str(request.url),
@@ -102,15 +103,15 @@ class GoogleProvider(OAuth20):
 
         credentials = flow.credentials
 
-        token, get_user = self.__get_token(db, credentials.id_token)
+        token, get_user = self.__get_token(credentials.id_token)
 
         if not(get_user):
-            get_user = self.__create_user(db, token, credentials)
+            get_user = self.__create_user(token, credentials)
 
 
         get_user.refresh_token = self.encryption.encrypt(credentials._refresh_token)
         get_user.picture = token.get('picture', None)
-        get_user: User = update_user_id(db, get_user.id, get_user)
+        get_user: User = update_user_id(self.__db, get_user.id, get_user)
 
         token_data: Token = self.__security.jwt_encode(get_user)
         params: str = ''
@@ -121,7 +122,7 @@ class GoogleProvider(OAuth20):
         return f'{self.__settings.callback_url_front}?proyect=ensaware{params}'
     
 
-    def refresh_token(self, db: Session, token: str) -> Token:
+    def refresh_token(self, token: str) -> Token:
         refresh_token = ''
 
         try:
@@ -144,7 +145,7 @@ class GoogleProvider(OAuth20):
 
         try:
             json_response = response.json()
-            _, get_user = self.__get_token(db, json_response['id_token'])
+            _, get_user = self.__get_token(json_response['id_token'])
 
             return self.__security.jwt_encode(get_user)
         except EnsawareException as enw:
