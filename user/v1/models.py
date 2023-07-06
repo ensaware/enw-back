@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
 from uuid import uuid4
-from sqlalchemy import Boolean, Column, Integer, ForeignKey, String, TIMESTAMP
+from sqlalchemy import Boolean, Column, ForeignKey, String, TIMESTAMP
 from sqlalchemy.orm import relationship
 
+from permission.v1.models import PermissionProfile
 from utils.database import Base
 
 
@@ -31,6 +32,7 @@ class Profile(Base):
     modified = Column(TIMESTAMP, default=None)
 
     user = relationship('User', back_populates='profile')
+    permission_profile = relationship('PermissionProfile', back_populates='profile')
 
 
 class User(Base):
