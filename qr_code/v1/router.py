@@ -7,14 +7,12 @@ from pydantic import Field
 from sqlalchemy.orm import Session
 from typing import Union
 
+from . import crud, schema
 from authorization.v1.schema import TokenData
 from utils.exception.ensaware import EnsawareException
 from utils.oauth.security import Security
-from user.v1 import schema
-from utils.database import ENGINE, get_db
-
-from . import QR
-from . import crud, schema
+from utils.quick_response_code.qr import QRCode
+from utils.database import get_db
 
 
 Page = Page.with_custom_options(
@@ -29,19 +27,19 @@ get_token = router.dependencies[0]
 
 
 @router.get(
-    '/generate',
+    '/create',
     status_code=status.HTTP_200_OK,
 )
-def generate(
+def create(
     token: TokenData = get_token,
     background: Union[str, None] = None,
     color: Union[str, None] = None,
-    show_logo: bool = True,
+    show_cua_logo: bool = True,
     db: Session = Depends(get_db),
 ):
     try:
-        result = QR(db)
-        qr = result.generate(token.sub, show_logo, background, color)
+        result = QRCode(db, token.sub, background, color, show_cua_logo)
+        qr = result.create()
 
         return Response(content=qr, media_type='image/png')
     except EnsawareException as enw:
@@ -65,38 +63,21 @@ def historic(
         raise enw
 
 
-@router.get(
-    '/read',
-    status_code=status.HTTP_200_OK,
-    response_model=schema.UserHistory,
-)
-def qr_code_read(
-    token: str,
-    token_data: TokenData = get_token,
-    db: Session = Depends(get_db),
-):
-    try:
-        result = QR(db)
-        return result.read(token_data, token)
-    except EnsawareException as enw:
-        logging.exception(enw)
-        raise enw
-
-
 @router.post(
     '/read/image',
-    status_code=status.HTTP_303_SEE_OTHER,
-    response_model=str
+    status_code=status.HTTP_200_OK,
+    response_model=schema.HistoricQrCode,
 )
 async def read_imagen(
     image: UploadFile,
+    token: TokenData = get_token,
     db: Session = Depends(get_db),
 ):
     try:
         contents = await image.read()
-        result = QR(db)
+        result = QRCode(db, token.sub)
 
-        return result.read_image(contents)
+        return result.read(contents)
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw

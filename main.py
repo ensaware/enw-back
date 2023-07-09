@@ -54,7 +54,6 @@ app.include_router(
     qr_code,
     prefix='/v1/qr-code',
     tags=['v1 - qr code'],
-    deprecated=True
 )
 
 app.include_router(

@@ -4,26 +4,6 @@ from pydantic import BaseModel, Field, EmailStr
 from user.v1.schema import UserRead
 
 
-class QRCodeBase(BaseModel):
-    email: EmailStr = Field(
-        ...,
-    )
-
-
-    class Config:
-        orm_mode = True
-
-
-class QRCode(QRCodeBase):
-    id: str
-    is_active: bool
-    created: datetime
-    modified: datetime | None
-
-    class Config:
-        orm_mode = True
-
-
 class HistoricQRCodeBase(BaseModel):
     user_id: str
 
@@ -33,6 +13,7 @@ class HistoricQRCodeBase(BaseModel):
 
 class HistoricQrCode(HistoricQRCodeBase):
     id: str
+    data: str | None
     is_active: bool
     created: datetime
     modified: datetime | None
@@ -42,9 +23,12 @@ class HistoricQrCode(HistoricQRCodeBase):
         orm_mode = True
 
 
-class UserHistory(BaseModel):
-    career_id: str | None
-    email: EmailStr
+class UpdateHistoricQR(BaseModel):
     id: str
-    name: str
+    data: str | None
+    is_active: bool
+    modified: datetime | None
     user_id: str
+
+    class Config:
+        orm_mode = True
