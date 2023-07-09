@@ -23,6 +23,12 @@ def create_user(db: Session, user: schema.UserBase, user_read_model: bool = Fals
         return schema.UserRead.from_orm(db_user)
     else:
         return schema.User.from_orm(db_user)
+    
+
+def get_user_all(db: Session) -> list[schema.UserRead]:
+    return db.query(models.User).\
+            filter(models.User.is_active).\
+            order_by(models.User.created.desc())
 
 
 def get_user_id(db: Session, id: str, user_read_model: bool = False) -> schema.User | schema.UserRead | None:

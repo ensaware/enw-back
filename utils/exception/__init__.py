@@ -12,6 +12,7 @@ class Error(Enum):
 
 @unique
 class Validate(Enum):
+    INVALID_AUTH = 'No esta autorizado para realizar esta solicitud.'
     INVALID_EMAIL = 'Corre electrónico invalido.'
     INVALID_PROVIDER = 'Proveedor no valido.'
     INVALID_JWT = 'Token no valido.'
