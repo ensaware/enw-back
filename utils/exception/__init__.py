@@ -17,6 +17,7 @@ class Validate(Enum):
     INVALID_JWT = 'Token no valido.'
     INVALID_REFRESH_TOKEN = 'refresh token no válido.'
     INVALID_USER = 'Usuario no válido.'
+    INVALID_QR_CODE_CREATE = 'Error al crear el código qr.'
 
 
 @unique
