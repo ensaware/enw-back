@@ -15,15 +15,15 @@ from utils.quick_response_code.qr import QRCode
 from utils.database import get_db
 
 
-Page = Page.with_custom_options(
-    size=Field(10, ge=1)
-)
-
 router = APIRouter(
     dependencies=[Depends(Security.get_token)],
 )
 
 get_token = router.dependencies[0]
+
+Page = Page.with_custom_options(
+    size=Field(10, ge=1)
+)
 
 
 @router.get(
@@ -50,7 +50,7 @@ def create(
 @router.get(
     '/historic',
     status_code=status.HTTP_200_OK,
-    response_model=Page [schema.HistoricQrCode]
+    response_model=Page[schema.HistoricQrCode]
 )
 def historic(
     token: TokenData = get_token,
