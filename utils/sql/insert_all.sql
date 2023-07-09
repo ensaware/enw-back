@@ -63,4 +63,11 @@ INSERT INTO permission (content_type_id, code_name, description)
     SELECT id, CONCAT(model, ':create'), 'Crear Usuarios' FROM content_type WHERE model = 'user' UNION
     SELECT id, CONCAT(model, ':read'), 'Leer Usuarios' FROM content_type WHERE model = 'user' UNION
     SELECT id, CONCAT(model, ':update'), 'Editar Usuarios' FROM content_type WHERE model = 'user' UNION
-    SELECT id, CONCAT(model, ':delete'), 'Eliminar Usuarios' FROM content_type WHERE model = 'user'
+    SELECT id, CONCAT(model, ':delete'), 'Eliminar Usuarios' FROM content_type WHERE model = 'user';
+
+
+-- ----------------------------
+-- Insert permission_profile --
+-- ----------------------------
+INSERT INTO permission_profile (permission_id, profile_id)
+    SELECT '752818ff-1a6a-11ee-9feb-eef2bf42ef26' permission_id, '6720c712-f77c-11ed-9785-5614bf0678df' profile_id;
