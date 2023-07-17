@@ -8,7 +8,7 @@ class ContentTypeBase(BaseModel):
     model: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ContentType(ContentTypeBase):
@@ -18,7 +18,7 @@ class ContentType(ContentTypeBase):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class PermissionBase(BaseModel):
@@ -28,7 +28,7 @@ class PermissionBase(BaseModel):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Permission(PermissionBase):
@@ -38,7 +38,7 @@ class Permission(PermissionBase):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class PermissionProfileBase(BaseModel):
@@ -47,7 +47,7 @@ class PermissionProfileBase(BaseModel):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class PermissionProfile(PermissionProfileBase):
@@ -57,7 +57,7 @@ class PermissionProfile(PermissionProfileBase):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ReadPermissionProfile(BaseModel):
@@ -69,4 +69,4 @@ class ReadPermissionProfile(BaseModel):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True

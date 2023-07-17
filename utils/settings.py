@@ -1,6 +1,7 @@
 import os
-from pydantic import BaseSettings
+
 from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
 
 load_dotenv()
@@ -14,7 +15,7 @@ class Settings(BaseSettings):
     database_name: str = os.getenv('DATABASE_NAME')
     database_api: str = 'mysql+mysqlconnector'
 
-    fernet_pass = os.getenv('FERNET_PASS')
+    fernet_pass: str = os.getenv('FERNET_PASS')
     encode: str = 'UTF-8'
 
     client_id_google: str = os.getenv('CLIENT_ID_GOOGLE')

@@ -3,6 +3,7 @@ uvicorn
 python-dotenv
 mysql-connector-python
 SQLAlchemy
+pydantic-settings
 pydantic[email]
 pyqrcode
 cryptography

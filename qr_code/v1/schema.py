@@ -8,7 +8,7 @@ class HistoricQRCodeBase(BaseModel):
     user_id: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class HistoricQrCode(HistoricQRCodeBase):
@@ -20,7 +20,7 @@ class HistoricQrCode(HistoricQRCodeBase):
     user: UserRead | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UpdateHistoricQR(BaseModel):
@@ -31,4 +31,4 @@ class UpdateHistoricQR(BaseModel):
     user_id: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

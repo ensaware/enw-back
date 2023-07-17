@@ -6,7 +6,7 @@ class CareerBase(BaseModel):
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Career(CareerBase):
@@ -16,14 +16,14 @@ class Career(CareerBase):
     modified: datetime | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ProfileBase(BaseModel):
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Profile(ProfileBase):
@@ -33,7 +33,7 @@ class Profile(ProfileBase):
     modified: datetime | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserBase(BaseModel):
@@ -46,7 +46,7 @@ class UserBase(BaseModel):
     refresh_token: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class User(UserBase):
@@ -58,7 +58,7 @@ class User(UserBase):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserRead(BaseModel):
@@ -76,7 +76,7 @@ class UserRead(BaseModel):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserUpdate(BaseModel):

@@ -13,13 +13,14 @@ class EnsawareException(Exception):
 
 
 class EnsawareExceptionBase(BaseModel):
-    code: str
+    code: int
     message: str
     type: str
 
 
 class EnsawareExceptionHandler:
     def ensaware(self, request: Request, enw: EnsawareException):
+        breakpoint()
         enw_base = EnsawareExceptionBase(
             code=enw.status_code,
             message=enw.message,
@@ -28,5 +29,5 @@ class EnsawareExceptionHandler:
 
         return JSONResponse(
             status_code=enw.status_code,
-            content=enw_base.dict()
+            content=enw_base.model_dump()
         )
