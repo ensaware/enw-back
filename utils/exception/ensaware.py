@@ -20,7 +20,6 @@ class EnsawareExceptionBase(BaseModel):
 
 class EnsawareExceptionHandler:
     def ensaware(self, request: Request, enw: EnsawareException):
-        breakpoint()
         enw_base = EnsawareExceptionBase(
             code=enw.status_code,
             message=enw.message,
