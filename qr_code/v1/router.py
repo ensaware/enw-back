@@ -9,10 +9,10 @@ from typing import Union
 
 from . import crud, schema
 from authorization.v1.schema import TokenData
+from utils.database import get_db
 from utils.exception.ensaware import EnsawareException
 from utils.oauth.security import Security
 from utils.quick_response_code.qr import QRCode
-from utils.database import get_db
 
 
 router = APIRouter(
@@ -20,10 +20,6 @@ router = APIRouter(
 )
 
 get_token = router.dependencies[0]
-
-Page = Page.with_custom_options(
-    size=Field(10, ge=1)
-)
 
 
 @router.get(

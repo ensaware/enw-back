@@ -27,9 +27,23 @@ settings = Settings()
 get_token = router.dependencies[0]
 get_db = router.dependencies[1]
 
-Page = Page.with_custom_options(
-    size=Field(10, ge=1)
+
+@router.delete(
+    '/{user_id}',
+    response_model=schema.UserRead,
+    status_code=status.HTTP_200_OK,
 )
+def delete_user_id(
+    user_id: str,
+    authorize: bool = Depends(PermissionChecker(code_name='user:delete:all')),
+    token: TokenData = get_token,
+    db: Session = get_db
+):
+    try:
+        return crud.get_user_id(db, user_id, True)
+    except EnsawareException as enw:
+        logging.exception(enw)
+        raise enw
 
 
 @router.get(
@@ -55,7 +69,7 @@ def user_id(
     response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
-def user_update_id(
+def update_user_id(
     user_id: str,
     update_user: schema.UserUpdate,
     authorize: bool = Depends(PermissionChecker(code_name='user:update:all')),
@@ -96,6 +110,7 @@ def user_all(
 )
 def user_me(
     token: TokenData = get_token,
+    authorize: bool = Depends(PermissionChecker(code_name='user:read')),
     db: Session = get_db
 ):
     '''
@@ -118,6 +133,7 @@ def user_me(
 def user_update_me(
     update_user: schema.UserUpdate,
     token: TokenData = get_token,
+    authorize: bool = Depends(PermissionChecker(code_name='user:update')),
     db: Session = get_db
 ):
     try:
