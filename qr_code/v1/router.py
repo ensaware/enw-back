@@ -3,7 +3,6 @@ import logging
 from fastapi import APIRouter, Depends, status, Response, UploadFile
 from fastapi_pagination.links import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
-from pydantic import Field
 from sqlalchemy.orm import Session
 from typing import Union
 
@@ -16,10 +15,14 @@ from utils.quick_response_code.qr import QRCode
 
 
 router = APIRouter(
-    dependencies=[Depends(Security.get_token)],
+    dependencies=[
+        Depends(Security.get_token),
+        Depends(get_db)
+    ],
 )
 
 get_token = router.dependencies[0]
+get_db = router.dependencies[1]
 
 
 @router.get(
@@ -31,7 +34,7 @@ def create(
     background: Union[str, None] = None,
     color: Union[str, None] = None,
     show_cua_logo: bool = True,
-    db: Session = Depends(get_db),
+    db: Session = get_db
 ):
     try:
         result = QRCode(db, token.sub, background, color, show_cua_logo)
@@ -50,7 +53,7 @@ def create(
 )
 def historic(
     token: TokenData = get_token,
-    db: Session = Depends(get_db),
+    db: Session = get_db
 ):
     try:
         return paginate(crud.get_historic_qr_code_user_id(db, token.sub))
@@ -67,7 +70,7 @@ def historic(
 async def read_imagen(
     image: UploadFile,
     token: TokenData = get_token,
-    db: Session = Depends(get_db),
+    db: Session = get_db
 ):
     try:
         contents = await image.read()

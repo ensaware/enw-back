@@ -3,7 +3,6 @@ import logging
 from fastapi import APIRouter, Depends, status
 from fastapi_pagination.links import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
-from pydantic import Field
 from sqlalchemy.orm import Session
 
 from authorization.v1.schema import TokenData
@@ -11,7 +10,6 @@ from utils.database import get_db
 from utils.exception.ensaware import EnsawareException
 from utils.oauth import PermissionChecker
 from utils.oauth.security import Security
-from utils.settings import Settings
 from . import crud, schema
 
 
@@ -19,81 +17,79 @@ router = APIRouter(
     dependencies=[
         Depends(Security.get_token),
         Depends(get_db)
-    ],
+    ]
 )
-
-settings = Settings()
 
 get_token = router.dependencies[0]
 get_db = router.dependencies[1]
 
 
 @router.delete(
-    '/{user_id}',
+    '/{id}',
     response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
 def delete_user_id(
-    user_id: str,
-    authorize: bool = Depends(PermissionChecker(code_name='user:delete:all')),
+    id: str,
+    # authorize: bool = Depends(PermissionChecker(code_name='user:delete:all')),
     token: TokenData = get_token,
     db: Session = get_db
 ):
     try:
-        return crud.get_user_id(db, user_id, True)
+        return crud.delete_user_id(db, id, True)
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw
 
 
 @router.get(
-    '/{user_id}',
+    '/{id}',
     response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
 def user_id(
-    user_id: str,
-    authorize: bool = Depends(PermissionChecker(code_name='user:read:all')),
+    id: str,
+    # authorize: bool = Depends(PermissionChecker(code_name='user:read:all')),
     token: TokenData = get_token,
     db: Session = get_db
 ):
     try:
-        return crud.get_user_id(db, user_id, True)
+        return crud.get_user_id(db, id, True)
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw
     
 
 @router.patch(
-    '/{user_id}',
+    '/{id}',
     response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
 def update_user_id(
-    user_id: str,
+    id: str,
     update_user: schema.UserUpdate,
-    authorize: bool = Depends(PermissionChecker(code_name='user:update:all')),
+    # authorize: bool = Depends(PermissionChecker(code_name='user:update:all')),
     token: TokenData = get_token,
     db: Session = get_db
 ):
     try:
-        user_model = crud.get_user_id(db, user_id)
-        updated_user = user_model.copy(update=update_user.dict(exclude_unset=True))
+        user_model = crud.get_user_id(db, id)
+        updated_user = user_model.model_copy(update=update_user.dict(exclude_unset=True))
 
-        return crud.update_user_id(db, user_id, updated_user, True)
+        return crud.update_user_id(db, id, updated_user, True)
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw
 
 
 @router.get(
-    '/all',
+    '/see/all',
     response_model=Page[schema.UserRead],
     status_code=status.HTTP_200_OK,
 )
-def user_all(
+def see_all_users(
     token: TokenData = get_token,
-    authorize: bool = Depends(PermissionChecker(code_name='user:read:all')),
+    # authorize: bool = Depends(PermissionChecker(code_name='user:read:all')),
     db: Session = get_db
 ):
     try:
@@ -104,13 +100,13 @@ def user_all(
 
 
 @router.get(
-    '/me',
+    '',
     response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
 def user_me(
     token: TokenData = get_token,
-    authorize: bool = Depends(PermissionChecker(code_name='user:read')),
+    # authorize: bool = Depends(PermissionChecker(code_name='user:read')),
     db: Session = get_db
 ):
     '''
@@ -126,19 +122,19 @@ def user_me(
     
 
 @router.patch(
-    '/me',
+    '',
     response_model=schema.UserRead,
     status_code=status.HTTP_200_OK,
 )
-def user_update_me(
+def update_user_me(
     update_user: schema.UserUpdate,
     token: TokenData = get_token,
-    authorize: bool = Depends(PermissionChecker(code_name='user:update')),
+    # authorize: bool = Depends(PermissionChecker(code_name='user:update')),
     db: Session = get_db
 ):
     try:
         user_model = crud.get_user_id(db, token.sub)
-        updated_user = user_model.copy(update=update_user.dict(exclude_unset=True))
+        updated_user = user_model.model_copy(update=update_user.model_dump(exclude_unset=True))
 
         return crud.update_user_id(db, token.sub, updated_user, True)
     except EnsawareException as enw:

@@ -3,6 +3,7 @@ from uuid import uuid4
 from sqlalchemy import Boolean, Column, ForeignKey, String, TIMESTAMP
 from sqlalchemy.orm import relationship
 
+from library.v1.models import LibraryUser
 from permission.v1.models import PermissionProfile
 from utils.database import Base
 
@@ -54,3 +55,4 @@ class User(Base):
     profile = relationship('Profile', back_populates='user')
     career = relationship('Career', back_populates='user')
     historic_qr_code = relationship('HistoricQrCode', back_populates='user')
+    library_user = relationship('LibraryUser', back_populates='user')

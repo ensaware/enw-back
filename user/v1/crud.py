@@ -20,10 +20,34 @@ def create_user(db: Session, user: schema.UserBase, user_read_model: bool = Fals
     db.refresh(db_user)
 
     if user_read_model:
-        return schema.UserRead.from_orm(db_user)
+        return schema.UserRead.model_validate(db_user)
     else:
-        return schema.User.from_orm(db_user)
+        return schema.User.model_validate(db_user)
     
+
+def delete_user_id(db: Session, id: str, user_read_model: bool = False) -> schema.User | schema.UserRead | None:
+    user = db.query(models.User).\
+            filter(models.User.id == id, models.User.is_active)
+
+    if not(user):
+        return None
+    
+    user.update({
+        models.User.modified: models.UTC,
+        models.User.is_active: False
+    }, synchronize_session=False)
+
+    db.commit()
+
+    user = db.query(models.User).\
+            filter(models.User.id == id, models.User.is_active == False).\
+            first()
+    
+    if user_read_model:
+        return schema.UserRead.model_validate(user)
+    else:
+        return schema.User.model_validate(user)
+
 
 def get_user_all(db: Session) -> list[schema.UserRead]:
     return db.query(models.User).\
@@ -33,24 +57,23 @@ def get_user_all(db: Session) -> list[schema.UserRead]:
 
 def get_user_id(db: Session, id: str, user_read_model: bool = False) -> schema.User | schema.UserRead | None:
     user = db.query(models.User).\
-            filter(models.User.id == id, models.User.is_active == True).\
+            filter(models.User.id == id, models.User.is_active).\
             first()
-    
 
     if not(user):
         return None
     
     if user_read_model:
-        return schema.UserRead.from_orm(user)
+        return schema.UserRead.model_validate(user)
     else:
-        return schema.User.from_orm(user)
+        return schema.User.model_validate(user)
 
 
 def get_user_provider(db: Session, provider_id: str, user_read_model: bool = False) -> schema.User | schema.UserRead | None:
     user = db.query(models.User).\
             filter(
                 models.User.provider_id == provider_id, 
-                models.User.is_active == True
+                models.User.is_active
             ).\
             first()
 
@@ -58,27 +81,9 @@ def get_user_provider(db: Session, provider_id: str, user_read_model: bool = Fal
         return None
     
     if user_read_model:
-        return schema.UserRead.from_orm(user)
+        return schema.UserRead.model_validate(user)
     else:
-        return schema.User.from_orm(user)
-
-
-def update_user_id(db: Session, id: str, update_user: schema.User, user_read_model: bool = False) -> schema.User | schema.UserRead | None:
-    user_query = db.query(models.User).\
-            filter(models.User.id == id, models.User.is_active == True)
-    
-    update_user.modified = models.UTC
-
-    if not(user_query.first()):
-        raise EnsawareException(status.HTTP_404_NOT_FOUND, TypeMessage.VALIDATION.value, Validate.INVALID_USER.value)
-    
-    user_query.update(update_user.dict(), synchronize_session='evaluate')
-    db.commit()
-
-    if user_read_model:
-        return schema.UserRead.from_orm(user_query.first())
-    else:
-        return schema.User.from_orm(user_query.first())
+        return schema.User.model_validate(user)
 
 
 def get_profile(db: Session, profile: ProfileType) -> schema.Profile | None:
@@ -87,17 +92,35 @@ def get_profile(db: Session, profile: ProfileType) -> schema.Profile | None:
             first()
     
     if profile:
-        return schema.Profile.from_orm(profile)
+        return schema.Profile.model_validate(profile)
     
     return None
 
 
 def get_career_id(db: Session, id: str) -> schema.Career | None:
     career = db.query(models.Career).\
-            filter(models.Career.id == id, models.Career.is_active == True).\
+            filter(models.Career.id == id, models.Career.is_active).\
             first()
     
     if career:
-        return schema.Career.from_orm(career)
+        return schema.Career.model_validate(career)
     
     return None
+
+
+def update_user_id(db: Session, id: str, update_user: schema.User, user_read_model: bool = False) -> schema.User | schema.UserRead | None:
+    user_query = db.query(models.User).\
+            filter(models.User.id == id, models.User.is_active)
+    
+    update_user.modified = models.UTC
+
+    if not(user_query.first()):
+        raise EnsawareException(status.HTTP_404_NOT_FOUND, TypeMessage.VALIDATION.value, Validate.INVALID_USER.value)
+    
+    user_query.update(update_user.model_dump(), synchronize_session='evaluate')
+    db.commit()
+
+    if user_read_model:
+        return schema.UserRead.model_validate(user_query.first())
+    else:
+        return schema.User.model_validate(user_query.first())

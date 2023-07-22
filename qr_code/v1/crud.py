@@ -12,9 +12,9 @@ def create_historic_qr_code(db: Session, user_id: str, update = False) -> schema
     db.refresh(query)
 
     if update:
-        return schema.UpdateHistoricQR.from_orm(query)
+        return schema.UpdateHistoricQR.model_validate(query)
     else:
-        return schema.HistoricQrCode.from_orm(query)
+        return schema.HistoricQrCode.model_validate(query)
 
 
 def get_historic_qr_code_id(db: Session, id: str) -> schema.HistoricQrCode | None:
@@ -22,7 +22,7 @@ def get_historic_qr_code_id(db: Session, id: str) -> schema.HistoricQrCode | Non
         filter(models.HistoricQrCode.id == id, models.HistoricQrCode.is_active == True).\
         first()
     
-    return schema.HistoricQrCode.from_orm(query)
+    return schema.HistoricQrCode.model_validate(query)
 
 
 def get_historic_qr_code_user_id(db: Session, user_id: str) -> list[schema.HistoricQrCode] | None:
@@ -39,7 +39,7 @@ def update_historic_qr_code_id(db: Session, id: str, update_history_qr_code: sch
     
     update_history_qr_code.modified = models.UTC
 
-    query.update(update_history_qr_code.dict(), synchronize_session='evaluate')
+    query.update(update_history_qr_code.model_dump(), synchronize_session='evaluate')
     db.commit()
 
-    return schema.HistoricQrCode.from_orm(query.first())
+    return schema.HistoricQrCode.model_validate(query.first())
