@@ -123,3 +123,34 @@ CREATE TABLE IF NOT EXISTS historic_qr_code (
 
 -- Create indexes
 CREATE INDEX idx_historic_qr_code_user_id ON historic_qr_code (user_id);
+
+
+-- -----------------------
+-- Create library table --
+-- -----------------------
+CREATE TABLE IF NOT EXISTS library (
+	id VARCHAR(60) NOT NULL DEFAULT (UUID()),
+	title VARCHAR(100) NOT NULL,
+	subtitle VARCHAR(255) NULL,
+	isbn_13 VARCHAR(20) NOT NULL,
+	isbn_10 VARCHAR(15) NULL,
+	created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified TIMESTAMP NULL,
+	CONSTRAINT pk_library_id PRIMARY KEY (id),
+	CONSTRAINT unq_isbn UNIQUE (isbn_13, isbn_10)
+);
+
+
+-- ----------------------------
+-- Create library_user table --
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS library_user (
+	id VARCHAR(60) NOT NULL DEFAULT (UUID()),
+	library_id VARCHAR(60) NOT NULL,
+	user_id VARCHAR(60) NOT NULL,
+	created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified TIMESTAMP NULL,
+	CONSTRAINT pk_library_user_id PRIMARY KEY (id)
+	-- CONSTRAINT fk_library_user_library_id FOREIGN KEY (library_id) REFERENCES library (id),
+	-- CONSTRAINT fk_library_user_user_id FOREIGN KEY (user_id) REFERENCES user (id)
+);
