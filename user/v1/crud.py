@@ -117,7 +117,7 @@ def update_user_id(db: Session, id: str, update_user: schema.User, user_read_mod
     if not(user_query.first()):
         raise EnsawareException(status.HTTP_404_NOT_FOUND, TypeMessage.VALIDATION.value, Validate.INVALID_USER.value)
     
-    user_query.update(update_user.model_dump(), synchronize_session='evaluate')
+    user_query.update(update_user.model_dump(), synchronize_session=False)
     db.commit()
 
     if user_read_model:
