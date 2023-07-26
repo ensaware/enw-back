@@ -1,4 +1,5 @@
-from fastapi import status
+from uuid import uuid4
+
 from sqlalchemy.orm import Session
 
 from utils.http.book import BookResponse
@@ -16,6 +17,7 @@ def create_library(db: Session, book_response: BookResponse) -> schema.Library:
         return book
     
     db_book = models.Library(
+        id = str(uuid4()),
         title = book_response.title,
         subtitle = book_response.subtitle,
         isbn_13 = book_response.isbn_13,
@@ -31,6 +33,7 @@ def create_library(db: Session, book_response: BookResponse) -> schema.Library:
 
 def create_library_user(db: Session, book_id: str, user_id: str) -> schema.LibraryUser:
     db_library_user = models.LibraryUser(
+        id = str(uuid4()),
         library_id = book_id,
         user_id = user_id
     )
