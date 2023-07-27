@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, status, UploadFile
 from fastapi_pagination.links import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
+from utils.exception import TypeMessage
 
 from . import crud, schema
 from authorization.v1.schema import TokenData
@@ -96,3 +97,6 @@ async def read_imagen(
     except EnsawareException as enw:
         logging.exception(enw)
         raise enw
+    except ValueError as ex:
+        logging.exception(ex)
+        raise EnsawareException(status.HTTP_400_BAD_REQUEST, TypeMessage.VALIDATION.value, str(ex))
