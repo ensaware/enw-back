@@ -97,17 +97,6 @@ def get_profile(db: Session, profile: ProfileType) -> schema.Profile | None:
     return None
 
 
-def get_career_id(db: Session, id: str) -> schema.Career | None:
-    career = db.query(models.Career).\
-            filter(models.Career.id == id, models.Career.is_active).\
-            first()
-    
-    if career:
-        return schema.Career.model_validate(career)
-    
-    return None
-
-
 def update_user_id(db: Session, id: str, update_user: schema.User, user_read_model: bool = False) -> schema.User | schema.UserRead | None:
     user_query = db.query(models.User).\
             filter(models.User.id == id, models.User.is_active)

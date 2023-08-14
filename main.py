@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 
 from authorization.v1.router import router as authorization
+from career.v1.router import router as career
 from library.v1.router import router as library
 from qr_code.v1.router import router as qr_code
 from utils.exception.ensaware import EnsawareException, EnsawareExceptionBase, EnsawareExceptionHandler
@@ -49,6 +50,13 @@ app.include_router(
     authorization,
     prefix='/v1/authorization',
     tags=['v1 - authorization']
+)
+
+
+app.include_router(
+    career,
+    prefix='/v1/career',
+    tags=['v1 - career']
 )
 
 app.include_router(
